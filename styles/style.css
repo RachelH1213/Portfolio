@@ -1,0 +1,485 @@
+/* 通用样式 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #9be6ff;
+    color: #333;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeIn 1s ease-in-out forwards;
+   
+    position: relative;
+    background: linear-gradient(120deg, #89cff0, #ffcccb); /* 从浅蓝到浅粉的渐变 */
+}
+/* 主体内容 */
+body::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 0, 150, 0.8), transparent 70%);
+    filter: blur(100px); /* 模糊效果 */
+    top: 20%;
+    left: 30%;
+    pointer-events: none; /* 让伪元素不接受鼠标事件 */
+    z-index: -1;
+    animation: float 6s ease-in-out infinite, color-change 10s linear infinite;
+}
+
+body::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(0, 200, 255, 0.7), transparent 70%);
+    filter: blur(120px); /* 模糊效果 */
+    bottom: 20%;
+    right: 25%;
+    z-index: 0;
+    animation: float 8s ease-in-out infinite; /* 动画效果 */
+}
+
+
+/* 添加浮动动画 */
+@keyframes float {
+    0% {
+        transform: translateY(0) translateX(0);
+    }
+    50% {
+        transform: translateY(-20px) translateX(10px);
+    }
+    100% {
+        transform: translateY(0) translateX(0);
+    }
+}
+
+/* 页面内容样式 */
+.main-content {
+    position: relative;
+    z-index: 1; /* 确保内容在模糊图案之上 */
+    text-align: center;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.main-content h1 {
+    font-size: 3em;
+    margin: 0;
+}
+
+.main-content p {
+    font-size: 1.2em;
+    margin: 10px 0 0;
+}
+/* 欢迎界面 */
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    background: url('images/background.jpg') no-repeat center center/cover;
+    position: relative;
+    gap: 20px; /* 设置按钮之间的间距 */
+    margin-top: 0px; /* 增加顶部外边距 */
+}
+
+.welcome-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.3); /* 半透明背景层 */
+    z-index: 1;
+}
+
+.welcome-container h1, .welcome-container p, .welcome-container button {
+    position: relative;
+    z-index: 2;
+}
+
+.welcome-container h1 {
+    font-size: 4em;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin: 0 0 20px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-container p {
+    font-size: 1.4em;
+    color: #555;
+    margin: 0 0 40px;
+}
+
+.welcome-container button {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    font-weight: 500;
+    color: white;
+    background-color: #77f4ff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(15px);
+    background-clip: padding-box; 
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); /* 默认发光效果 */
+}
+
+.welcome-container button:hover {
+    background-color: #00f2ff;
+    transform: scale(1.05);
+    border-color: rgba(0, 255, 255, 0.5); /* 渐变边框 */
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.5); 
+}
+/* 页面头部 */
+header {
+    
+    background: linear-gradient(to right, #ffffff, #f0f0f5);
+    padding: 60px 20px;
+    text-align: center;
+    
+    text-align: center;
+    padding: 60px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+}
+
+header h1 {
+    font-size: 3em;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0;
+}
+
+header p {
+    font-size: 1.2em;
+    color: #555;
+}
+
+/* 导航菜单 */
+nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    gap: 20px;
+}
+
+nav ul li {
+    margin: 0;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #06f3ff;
+    font-size: 1.2em;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 8px;
+    position: relative;
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+}
+
+nav ul li a:hover {
+    background-color: rgba(0, 112, 201, 0.1);
+    color: #06fbff;
+    transform: translateY(-3px);
+}
+
+
+/* 添加浮动动画 */
+@keyframes float {
+    0% {
+        transform: translateY(0) translateX(0);
+    }
+    50% {
+        transform: translateY(-20px) translateX(10px);
+    }
+    100% {
+        transform: translateY(0) translateX(0);
+    }
+}
+
+/* 页面内容样式 */
+.main-content {
+    position: relative;
+    z-index: 1; /* 确保内容在模糊图案之上 */
+    text-align: center;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.main-content h1 {
+    font-size: 3em;
+    margin: 0;
+}
+
+.main-content p {
+    font-size: 1.2em;
+    margin: 10px 0 0;
+}
+
+/* 卡片布局 */
+.project-container {
+    display: flex;
+    align-items: center; /* 卡片和描述部分对齐 */
+    margin-bottom: 20px; /* 每个项目之间的间距 */
+    position: relative;
+}
+.project-description {
+    margin-left: 20px;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: #333;
+    font-size: 1.2em;
+    font-weight: 400;
+    opacity: 0;
+    transition: max-width 0.3s ease, opacity 0.3s ease;
+    border-left: 1px solid #ddd;
+    padding-left: 20px;
+}
+/* 当悬停时展开描述 */
+.project-container:hover .project-description {
+    max-width: 700px; /* 描述部分的最大宽度 */
+    opacity: 1;
+    white-space: normal; /* 描述文字允许换行 */
+}
+
+.project-card {
+    display: inline-block;
+    width: calc(33.333% - 10px);  
+    height: 200px;
+    margin: 20px;
+    border: 0px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #74daff;
+    transition: transform 0.3s, box-shadow 0.3s;
+    backdrop-filter: blur(15px);
+    display: flex; /* 让按钮水平排列 */
+    justify-content: center; /* 居中对齐按钮 */
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    
+}
+
+.project-card a {
+    text-decoration: none; /* 移除下划线 */
+    color: inherit; /* 继承父元素的字体颜色 */
+    display: block;
+}
+
+
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+   
+}
+
+
+.project-card a:hover {
+    text-decoration: none; /* 确保鼠标悬停时也没有下划线 */
+    color: #0070c9;
+}
+
+.project-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.project-card h3 {
+    font-size: 1.5em;
+    margin: 10px;
+}
+
+.project-card p {
+    color: #666;
+    margin: 10px;
+}
+.about-content {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+}
+
+.about-card {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.about-card h3 {
+    font-size: 1.8em;
+    color: #0070c9;
+    margin-bottom: 10px;
+}
+
+.about-card p {
+    font-size: 1.2em;
+    color: #555;
+}
+
+/* 页脚 */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 0.9em;
+    color: #777;
+    
+}
+footer a {
+    text-decoration: none;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .project-card {
+        width: calc(50% - 20px);
+    }
+}
+
+@media (max-width: 480px) {
+    .project-card {
+        width: calc(100% - 20px);
+    }
+}
+
+
+
+.button-container {
+    text-align: center; /* 按钮水平居中 */
+    display: flex; /* 让按钮水平排列 */
+    justify-content: center; /* 居中对齐按钮 */
+    gap: 20px; /* 设置按钮之间的间距 */
+    margin-top: 20px; /* 增加顶部外边距 */
+    padding: 20px;
+    
+    
+}
+.button-container2 {
+    text-align: center; /* 按钮水平居中 */
+    display: flex; /* 让按钮水平排列 */
+    justify-content: center; /* 居中对齐按钮 */
+    gap: 20px; /* 设置按钮之间的间距 */
+    margin-top: 20px; /* 增加顶部外边距 */
+    padding: 20px;
+    
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* 增加分隔感 */
+    
+}
+
+button {
+    padding: 15px 30px;
+    background: hsl(188, 100%, 75%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+}
+
+button:hover {
+    background: #00fbff;
+    transform: scale(1.05);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+
+}
+
+button:active {
+    background-color: #00ddff;
+    transform: scale(0.95);
+    backdrop-filter: blur(35px);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes color-change {
+    0% {
+        background: radial-gradient(circle, rgba(255, 0, 150, 0.8), transparent 70%);
+    }
+    50% {
+        background: radial-gradient(circle, rgba(0, 255, 150, 0.8), transparent 70%);
+    }
+    100% {
+        background: radial-gradient(circle, rgba(255, 0, 150, 0.8), transparent 70%);
+    }
+}
+
+.arrow-container {
+    position: absolute;
+    bottom: 20px; /* 靠近页面底部 */
+    left: 50%; /* 居中对齐 */
+    transform: translateX(-50%);
+    z-index: 10;
+}
+.arrow {
+    font-size: 2em;
+    color: #0070c9;
+    animation: bounce 1.5s infinite, fade 2s infinite; /* 结合上下跳动和渐隐动画 */
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0); /* 初始位置 */
+    }
+    50% {
+        transform: translateY(30px); /* 向下移动 10px */
+    }
+}
+@keyframes fade {
+    0%, 100% {
+        opacity: 1; /* 完全显示 */
+    }
+    50% {
+        opacity: 0; /* 完全透明 */
+    }
+}
