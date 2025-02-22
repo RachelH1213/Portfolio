@@ -1,44 +1,64 @@
 let font;
-let echoPoints = [];
+let echoText;
 
 function preload() {
-  font = loadFont('echo.otf');
+  font = loadFont('echo.otf'); 
 }
 
 function setup() {
   createCanvas(600, 600);
-  textSize(100);
-  let basePoints = font.textToPoints('ECHO', 50, 300, 100, { sampleFactor: 0.2 });
-
-  for (let i = 0; i < 5; i++) {
-    let offset = i * 10;
-    let alpha = map(i, 0, 5, 255, 50);
-    let layer = basePoints.map(pt => ({
-      x: pt.x + offset,
-      y: pt.y + offset,
-      alpha: alpha
-    }));
-    echoPoints.push(layer);
-  }
+  echoText = new EchoText('ECHO', 100, 300, 150);
 }
 
 function draw() {
-  background(30);
-  noStroke();
-
-  for (let i = 0; i < echoPoints.length; i++) {
-    fill(255, 255, 255, echoPoints[i][0].alpha);
-    for (let pt of echoPoints[i]) {
-      ellipse(pt.x, pt.y, 4, 4);
-    }
-  }
+  background(0);
+  echoText.update();
+  echoText.render();
 }
 
-function mousePressed() {
-  for (let i = 0; i < echoPoints.length; i++) {
-    for (let pt of echoPoints[i]) {
-      pt.x += random(-10, 10);
-      pt.y += random(-10, 10);
+class EchoText {
+  constructor(text, x, y, size) {
+    this.text = text;
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.layers = []; 
+    this.points = font.textToPoints(this.text, this.x, this.y, this.size, { sampleFactor: 0.2 });
+
+    for (let i = 0; i < 5; i++) {
+      this.layers.push({ offset: i * 2, alpha: 255 - i * 50 });
+    }
+  }
+
+  update() {
+    
+    for (let layer of this.layers) {
+      layer.offset += 0.5;
+      layer.alpha -= 1; 
+    }
+
+    
+    if (this.layers.length > 0 && this.layers[this.layers.length - 1].alpha <= 0) {
+      this.layers.shift(); 
+      this.layers.push({ offset: 0, alpha: 255 }); 
+    }
+  }
+
+  render() {
+    noStroke();
+
+    
+    for (let layer of this.layers) {
+      fill(0, 255, 0, layer.alpha); 
+      for (let pt of this.points) {
+        ellipse(pt.x + layer.offset, pt.y + layer.offset, 4, 4);
+      }
+    }
+
+    
+    fill(255);
+    for (let pt of this.points) {
+      ellipse(pt.x, pt.y, 5, 5);
     }
   }
 }
