@@ -62,3 +62,10 @@ class EchoText {
     }
   }
 }
+
+function mousePressed() {
+  echoText.layers = [];
+  for (let i = 0; i < 5; i++) {
+    echoText.layers.push({ offset: i * 2, alpha: 255 - i * 50 });
+  }
+}
