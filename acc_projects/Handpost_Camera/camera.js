@@ -1,80 +1,123 @@
-let video;
+let video;          // 摄像头视频
+let poseNet;        // PoseNet 模型
+let poses = [];     // PoseNet 返回的姿势数组
 
-// -- Teachable Machine related --
-let classifier;       // Classifier
-let label = "Waiting..."; 
-// Replace with your Teachable Machine model URL (ensure the URL ends with a slash)
-let modelURL = "https://teachablemachine.withgoogle.com/models/vxqUbdTJu/";
+let classifier;     // Teachable Machine 分类器
+let label = "none"; // 当前手势标签
+let modelURL = "https://teachablemachine.withgoogle.com/models/VMC5Z__3A/"; // TM 模型文件夹路径
 
-// -- Handpose related --
-let handpose;
-let predictions = []; // Hand landmarks detection results
+let pg;             // 用于绘图的离屏画布
 
-// -- Drawing related --
-let graphics; 
-let prevX, prevY; // Previous frame's index finger coordinates
+// UI 控件
+let rSlider, gSlider, bSlider;   // 颜色滑块
+let brushSizeSlider;             // 笔刷大小滑块
+let saveBtn, clearBtn;           // 保存 & 清空按钮
 
-// -- DOM Elements --
-let colorPicker;      // Color picker for brush color in paint mode
-let thicknessSlider;  // Slider to control brush thickness
-let gestureP;         // Paragraph element to display current gesture
-
+// ==============
+// 预加载：加载 TM 模型
+// ==============
 function preload() {
-  // Preload Teachable Machine model
   classifier = ml5.imageClassifier(modelURL + "model.json");
 }
 
+// ==============
+// setup：初始化
+// ==============
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth-100, windowHeight);
 
-  // Create the video capture
+  // 创建摄像头输入
   video = createCapture(VIDEO);
   video.size(width, height);
   video.hide();
 
-  // Create an independent graphics layer for drawing
-  graphics = createGraphics(width, height);
-  graphics.clear();
+  // 初始化 PoseNet
+  poseNet = ml5.poseNet(video, () => {
+    console.log("PoseNet ready");
+  });
+  poseNet.on("pose", (results) => {
+    poses = results;
+  });
 
-  // Start the classifier
+  // 离屏画布：专门用来绘制涂鸦
+  pg = createGraphics(width, height);
+
+  // 开始分类视频（手势识别）
   classifyVideo();
+   // 创建一个容器 div，用于放置所有 UI 控件
+   let uiContainer = createDiv('');
+   // 通过 style() 设置绝对定位，让它浮在画面上
+   uiContainer.style('position', 'absolute');
+   uiContainer.style('top', '10px');
+   uiContainer.style('left', '10px');
+   uiContainer.style('z-index', '9999');
+   // 下面这几行是为了让它有个半透明背景、白字、一些内边距等美化
+   uiContainer.style('background', 'rgba(0, 0, 0, 0.3)');
+   uiContainer.style('color', '#fff');
+   uiContainer.style('padding', '10px');
+   uiContainer.style('border-radius', '5px');
 
-  // Initialize the Handpose model
-  handpose = ml5.handpose(video, () => {
-    console.log("Handpose model loaded!");
-  });
-  // When a hand is detected, store the results in predictions
-  handpose.on("hand", (results) => {
-    console.log("Hand detection results:", results);
-    predictions = results;
-  });
+  // ------------- 创建 UI 控件 -------------
+  createP("Brush Color (R / G / B):").parent(uiContainer);
+rSlider = createSlider(0, 255, 255).parent(uiContainer);
+gSlider = createSlider(0, 255, 0).parent(uiContainer);
+bSlider = createSlider(0, 255, 0).parent(uiContainer);
+createP("Brush Size:").parent(uiContainer);
+brushSizeSlider = createSlider(5, 100, 20).parent(uiContainer);
 
-  // Create DOM buttons for saving and clearing the drawing
-  let saveBtn = createButton("Save Drawing");
-  saveBtn.position(20, 20);
-  saveBtn.mousePressed(() => saveCanvas(graphics, "hand_draw", "png"));
+saveBtn = createButton("Save").parent(uiContainer);
+saveBtn.mousePressed(saveDrawing);
 
-  let clearBtn = createButton("Clear Drawing");
-  clearBtn.position(140, 20);
-  clearBtn.mousePressed(() => graphics.clear());
+clearBtn = createButton("Clear").parent(uiContainer);
+clearBtn.mousePressed(clearCanvas);
 
-  // Create a color picker for the brush (used in paint mode)
-  colorPicker = createColorPicker('#00FF00'); // default green
-  colorPicker.position(20, 60);
 
-  // Create a slider to control brush thickness (used in paint mode)
-  thicknessSlider = createSlider(1, 20, 10); // min:1, max:20, default:10
-  thicknessSlider.position(20, 100);
-
-  // Create a paragraph DOM element to display the current gesture
-  gestureP = createP("Current Gesture: " + label);
-  gestureP.position(20, 140);
 }
 
-function classifyVideo() {
-  if (classifier) {
-    classifier.classify(video, gotResult);
+// ==============
+// draw：每帧循环
+// ==============
+function draw() {
+  background(220);
+
+  // （1）镜像显示摄像头
+  push();
+  translate(width, 0);
+  scale(-1, 1);
+  image(video, 0, 0, width, height);
+  pop();
+
+  // （2）叠加我们在离屏画布上的绘图
+  image(pg, 0, 0);
+
+  // （3）获取右手坐标并根据手势绘图
+  if (poses.length > 0) {
+    let handPos = getMirroredRightHandPos();
+
+    // 根据手势执行操作
+    if (label === "open_hand") {
+      spray(handPos.x, handPos.y);
+    } else if (label === "closed_fist") {
+      eraseArea(handPos.x, handPos.y);
+    }
+
+    // 画一个小圆点可视化手的位置（调试用）
+    // fill(255, 0, 0);
+    // noStroke();
+    // ellipse(handPos.x, handPos.y, 10);
   }
+
+  // （4）在画面上显示当前识别到的手势标签
+  // fill(0);
+  // textSize(20);
+  // text("Gesture: " + label, 10, 30);
+}
+
+// ==============
+// 分类视频（循环调用）
+// ==============
+function classifyVideo() {
+  classifier.classify(video, gotResult);
 }
 
 function gotResult(error, results) {
@@ -82,111 +125,66 @@ function gotResult(error, results) {
     console.error(error);
     return;
   }
-  if (results && results.length > 0) {
-    label = results[0].label; // Get the highest confidence gesture label
-    console.log("Classification result:", label, "Confidence:", results[0].confidence);
-  } else {
-    label = "No Gesture";
-  }
-  classifyVideo(); // Loop classification
+  label = results[0].label;
+  classifyVideo(); // 继续下一帧识别
 }
 
-function draw() {
-  background(0);
+// ==============
+// 获取右手坐标（镜像处理）
+// ==============
+function getMirroredRightHandPos() {
+  let rightWrist = poses[0].pose.rightWrist;
+  // PoseNet 给出的 (x,y) 是原始视频坐标
+  // 我们要镜像到画布中，所以 x 变成 width - x
+  let xMirrored = width - rightWrist.x;
+  let yMirrored = rightWrist.y;
+  return createVector(xMirrored, yMirrored);
+}
 
-  // Update the DOM paragraph with the current gesture
-  gestureP.html("Current Gesture: " + label);
-
-  // Display the video with a mirror effect
-  push();
-  translate(width, 0);
-  scale(-1, 1);
-  image(video, 0, 0, width, height);
-  pop();
-
-  // Overlay the drawing graphics layer
-  image(graphics, 0, 0);
-
-  // Display the current classification label on canvas (optional)
-  fill(255);
-  textSize(32);
-  textAlign(CENTER, CENTER);
-  text(label, width / 2, 50);
-
-  // Call different drawing functions based on the gesture label:
-  if (label === "Open Hand") {
-    // Paint mode: use a thick brush with user-selected color and thickness
-    drawWithHandpose("paint");
-  } else if (label === "One Finger") {
-    // Fine line mode: use a thinner brush (fixed value)
-    drawWithHandpose("fine");
-  } else if (label === "Fist") {
-    // Erase mode: erase content on the graphics layer
-    eraseWithHandpose();
-  } else {
-    // For other gestures, reset previous coordinates to avoid unwanted lines
-    prevX = undefined;
-    prevY = undefined;
+// ==============
+// 喷涂
+// ==============
+function spray(x, y) {
+  let brushSize = brushSizeSlider.value();
+  let r = rSlider.value();
+  let g = gSlider.value();
+  let b = bSlider.value();
+  pg.noStroke();
+  
+  // 增加每帧生成的圆形数量，比如从 10 增加到 20 个
+  let circlesCount = 200;
+  // 使用更小的偏移范围，让圆形之间更紧密
+  for (let i = 0; i < circlesCount; i++) {
+    let offsetX = random(-brushSize/2, brushSize/2);
+    let offsetY = random(-brushSize/2, brushSize/2);
+    pg.fill(r, g, b, 150);
+    // 保持圆形直径在一定范围内，保证连续感
+    pg.ellipse(x + offsetX, y + offsetY, random(brushSize/4, brushSize/2));
   }
 }
 
-/** Draw a line on the graphics layer using the index finger coordinates from Handpose.
- *  The "mode" parameter: "paint" for thick brush, "fine" for thin line.
- */
-function drawWithHandpose(mode) {
-  if (predictions.length > 0) {
-    let hand = predictions[0];        // Use data from the first detected hand
-    let landmarks = hand.landmarks;     // 21 hand landmarks
-    // landmarks[8] is usually the index finger tip coordinate
-    let x = landmarks[8][0];
-    let y = landmarks[8][1];
-
-    // Since the video is mirrored, reverse the x coordinate
-    x = width - x;
-
-    // Debug: print the drawing coordinates
-    console.log("Drawing coordinates:", x, y);
-
-    // If previous coordinates exist, draw a line
-    if (prevX !== undefined && prevY !== undefined) {
-      if (mode === "paint") {
-        // Use the color picker value and slider value for thickness
-        graphics.stroke(colorPicker.value());
-        graphics.strokeWeight(thicknessSlider.value());
-      } else if (mode === "fine") {
-        // Fixed thin line settings for fine mode
-        graphics.stroke(255, 0, 0);
-        graphics.strokeWeight(4);
-      }
-      graphics.line(prevX, prevY, x, y);
-    }
-    // Update previous coordinates
-    prevX = x;
-    prevY = y;
-  } else {
-    prevX = undefined;
-    prevY = undefined;
-  }
+// ==============
+// 擦除
+// ==============
+function eraseArea(x, y) {
+  let brushSize = brushSizeSlider.value();
+  pg.erase();
+  pg.ellipse(x, y, brushSize);
+  pg.noErase();
 }
 
-/** Erase content on the graphics layer using the index finger coordinate from Handpose */
-function eraseWithHandpose() {
-  if (predictions.length > 0) {
-    let hand = predictions[0];
-    let landmarks = hand.landmarks;
-    let x = landmarks[8][0];
-    let y = landmarks[8][1];
-    x = width - x; // Mirror conversion
-
-    // Use p5.js erase mode to clear pixels on the graphics layer
-    graphics.erase();
-    graphics.noStroke();
-    // Draw a circle to erase an area around the finger
-    graphics.ellipse(x, y, 50, 50);
-    graphics.noErase();
-
-    // Do not update prevX/prevY during erasing to avoid unwanted lines
-    prevX = undefined;
-    prevY = undefined;
-  }
+// ==============
+// 保存画面
+// ==============
+function saveDrawing() {
+  // saveCanvas() 会把当前主画布的内容导出为 PNG
+  // 也就是摄像头画面 + 离屏画布叠加效果
+  saveCanvas("myDrawing", "png");
 }
+
+// ==============
+// 清空涂鸦
+// ==============
+function clearCanvas() {
+  pg.clear();
+} 
