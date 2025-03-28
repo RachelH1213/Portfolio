@@ -9,8 +9,34 @@
   <!-- 再加载 ml5.js (最新版本) -->
   <script src="https://cdn.jsdelivr.net/npm/ml5@0.12.2/dist/ml5.min.js"></script>
   <!-- 最后加载你的脚本 -->
-  <script src="camera.js"></script>
-  
+  <style>
+    body {
+      margin: 0;
+      /* Set a colorful gradient background */
+      background: linear-gradient(to right, #ffcc00, #66ccff);
+      color: white;
+      font-family: sans-serif;
+      text-align: right; /* Shift text to the right */
+      padding-right: 20px; /* Optional: add some right padding */
+    }
+    canvas {
+      display: block;
+      margin: auto;
+      border: 2px solid white;
+    }
+  </style>
+  <!-- Include p5.js and ml5.js here if not included elsewhere -->
 </head>
-<body></body>
+<body>
+  <h2>Experimental Camera Project</h2>
+  <p>Use different hand gestures to draw or erase on the screen:</p>
+  <ul>
+    <li>✋ <strong>Open Hand</strong> → Paint Mode</li>
+    <li>👊 <strong>Fist</strong> → Erase Mode</li>
+    <li>🚫 <strong>No Hand</strong> → No Drawing</li>
+  </ul>
+
+  <!-- Link to your p5/ml5 sketch -->
+  <script src="camera.js"></script>
+</body>
 </html>
