@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cosmic Takeout</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="loader">
+  🔮 Summoning your cosmic menu...
+</div>
+  <h1>🍔 Cosmic Takeout 🍜</h1>
+  <p>What food are you craving? Let fate decide.</p>
+  <div class="buttons">
+    <button onclick="getFortune('bubble_tea')">Bubble Tea</button>
+    <button onclick="getFortune('hotpot')">Hotpot</button>
+    <button onclick="getFortune('fried_chicken')">Fried Chicken</button>
+  </div>
+  <div id="loading" style="display: none;">
+    🔮 Reading your cosmic appetite...
+  </div>
+  <div id="result" style="display: none;">
+    <img id="foodImg" src="" alt="Food Image">
+    <p id="funnyMsg"></p>
+    <p id="adviceMsg"></p>
+    <p id="excuseMsg" style="font-style: italic; color: #555;"></p>
+    <button id="revealBtn" onclick="revealYesNo()" style="display:none; margin-top:1rem;">🔮 Reveal My Fate</button>
+    <p id="yesNoQuestion"></p>
+    <p id="yesNoAnswer" style="font-weight: bold;"></p>
+    <img id="yesNoImg" src="" alt="" style="width: 300px; margin-top: 10px;">
+  </div>
+  <script>
+    
+    document.body.style.overflow = "hidden";
+    setTimeout(() => {
+      document.body.style.overflow = "auto";
+    }, 1600);
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>
